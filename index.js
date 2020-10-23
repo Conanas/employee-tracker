@@ -2,11 +2,13 @@ const mysql = require("mysql");
 const inquirer = require("inquirer");
 const table = require("console.table");
 const { inherits } = require("util");
+const { Module } = require("module");
 
 const addModule = require("./assets/js/add");
 const viewModule = require("./assets/js/view");
 const updateModule = require("./assets/js/update");
 const deleteModule = require("./assets/js/delete");
+const { connect } = require("http2");
 
 const connection = mysql.createConnection({
     host: "localhost",
@@ -20,103 +22,23 @@ const connection = mysql.createConnection({
     // Your password
     password: "password",
     database: "employee_db"
-});
+})
 
 connection.connect(function(err) {
     if (err) throw err;
-    console.log("connected as id " + connection.threadId + "\n");
     initiate();
-});
-
-function addDepartmentPrompts() {
-    return inquirer.prompt([{
-        type: "input",
-        message: "Enter name of department",
-        name: "departmentName"
-    }])
-}
-
-async function addDepartment() {
-    try {
-        let add = await addDepartmentPrompts();
-        query = `INSERT INTO department (name) VALUES (?)`;
-        connection.query(query, [add.departmentName], function(err, res) {
-            if (err) throw err;
-            initiate();
-        })
-    } catch (error) {
-        console.log(error);
-    }
-}
-
-function addSelectionSwitch(addSelection) {
-    switch (addSelection.addSelection) {
-        case ("Department"):
-            addDepartment();
-            break;
-        case ("Role"):
-
-            break;
-        case ("Employee"):
-
-            break;
-        case ("Back"):
-            initiate();
-            break;
-        default:
-            console.log("Add Switch Error");
-    }
-}
-
-function addToDatabasePrompts() {
-    return inquirer.prompt([{
-        type: "rawlist",
-        message: "What would you like to add?",
-        choices: [
-            "Department",
-            "Role",
-            "Employee",
-            "Back"
-        ],
-        name: "addSelection"
-    }]);
-}
-
-async function addToDatabase() {
-    try {
-        let addSelection = await addToDatabasePrompts();
-        addSelectionSwitch(addSelection);
-    } catch (error) {
-        console.log(error);
-    }
-}
-
-function viewDatabasePrompts() {
-    console.log("viewing db")
-}
-
-function updateDatabasePrompts() {
-    console.log("updating db")
-}
-
-function deleteFromDatabasePrompts() {
-    console.log("deleting from db")
-}
+})
 
 function switchMainSelection(mainSelection) {
     switch (mainSelection.selection) {
         case ("Add to Database"):
-            addToDatabase();
-            break;
+            return addModule.addToDatabase();
         case ("View Database"):
-            viewDatabasePrompts();
-            break;
+            return viewModule.viewDatabasePrompts();
         case ("Update Database"):
-            updateDatabasePrompts();
-            break;
+            return updateModule.updateDatabasePrompts();
         case ("Delete from Database"):
-            deleteFromDatabasePrompts();
-            break;
+            return deleteModule.deleteFromDatabasePrompts();
         case ("Exit"):
             console.log("Exiting Program")
             connection.end;
@@ -153,7 +75,11 @@ function mainMenuPrompt() {
 async function initiate() {
     try {
         let mainSelection = await mainMenuPrompt();
-        switchMainSelection(mainSelection);
+        let query = await switchMainSelection(mainSelection);
+        connection.query(query, function(err, res) {
+            if (err) throw err;
+            initiate();
+        })
     } catch (error) {
         console.log(error)
     }
