@@ -21,12 +21,69 @@ connection.connect(function(err) {
     if (err) throw err;
     console.log("connected as id " + connection.threadId + "\n");
     initiate();
-    // connection.end;
-    // process.exit(-1);
 });
 
+function addDepartmentPrompts() {
+    return inquirer.prompt([{
+        type: "input",
+        message: "Enter name of department",
+        name: "departmentName"
+    }])
+}
+
+async function addDepartment() {
+    try {
+        let add = await addDepartmentPrompts();
+        query = `INSERT INTO department (name) VALUES (?)`;
+        connection.query(query, [add.departmentName], function(err, res) {
+            if (err) throw err;
+            initiate();
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+function addSelectionSwitch(addSelection) {
+    switch (addSelection.addSelection) {
+        case ("Department"):
+            addDepartment();
+            break;
+        case ("Role"):
+
+            break;
+        case ("Employee"):
+
+            break;
+        case ("Back"):
+            initiate();
+            break;
+        default:
+            console.log("Add Switch Error");
+    }
+}
+
 function addToDatabasePrompts() {
-    console.log("adding to db")
+    return inquirer.prompt([{
+        type: "rawlist",
+        message: "What would you like to add?",
+        choices: [
+            "Department",
+            "Role",
+            "Employee",
+            "Back"
+        ],
+        name: "addSelection"
+    }]);
+}
+
+async function addToDatabase() {
+    try {
+        let addSelection = await addToDatabasePrompts();
+        addSelectionSwitch(addSelection);
+    } catch (error) {
+        console.log(error);
+    }
 }
 
 function viewDatabasePrompts() {
@@ -44,7 +101,7 @@ function deleteFromDatabasePrompts() {
 function switchMainSelection(mainSelection) {
     switch (mainSelection.selection) {
         case ("Add to Database"):
-            addToDatabasePrompts();
+            addToDatabase();
             break;
         case ("View Database"):
             viewDatabasePrompts();
