@@ -3,6 +3,11 @@ const inquirer = require("inquirer");
 const table = require("console.table");
 const { inherits } = require("util");
 
+const addModule = require("./assets/js/add");
+const viewModule = require("./assets/js/view");
+const updateModule = require("./assets/js/update");
+const deleteModule = require("./assets/js/delete");
+
 const connection = mysql.createConnection({
     host: "localhost",
 
