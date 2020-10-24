@@ -3,6 +3,7 @@ const cTable = require("console.table");
 
 const sqlLib = require("../sqlLib");
 const indexModule = require("../../index");
+const CRUD = require("./CRUD");
 
 module.exports = {
 
@@ -10,28 +11,22 @@ module.exports = {
         return inquirer.prompt([{
             type: "input",
             message: "Enter name of department",
-            name: "departmentName"
+            name: "name"
         }])
     },
 
     addDepartment: async function() {
         try {
-            let add = await this.addDepartmentPrompts();
-            let query = `INSERT INTO department (name) VALUES (?)`;
-            sqlLib.getConnection(function(err, connection) {
-                if (err) throw err;
-                connection.query(query, [add.departmentName], function(err) {
-                    if (err) throw err;
-                    indexModule.initiate();
-                });
-            });
+            let department = await this.addDepartmentPrompts();
+            await CRUD.addDepartment(department);
+            indexModule.initiate();
         } catch (error) {
             console.log(error);
         }
     },
 
-    addRolePrompts: function(res, connection) {
-        inquirer.prompt([{
+    addRolePrompts: function(departments) {
+        return inquirer.prompt([{
                 type: "input",
                 message: "Enter name of role",
                 name: "title"
@@ -44,36 +39,36 @@ module.exports = {
             {
                 type: "rawlist",
                 message: "Enter department",
-                choices: res.map(item => item.name),
+                choices: departments.map(item => item.name),
                 name: "departmentId"
             }
-        ]).then(function(answers) {
-            res.forEach(item => {
+        ])
+    },
+
+    addRole: async function() {
+        try {
+            let departments = await CRUD.getDepartments();
+            let answers = await this.addRolePrompts(departments);
+            departments.forEach(item => {
                 if (item.name === answers.departmentId) {
                     answers.departmentId = item.id;
                     return;
                 }
             });
-            let query = `INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)`;
-            connection.query(query, [answers.title, answers.salary, answers.departmentId], function(err) {
-                if (err) throw err;
-                indexModule.initiate();
-            });
-        });
-    },
-
-    addRole: function() {
-        sqlLib.getConnection((err, connection) => {
-            if (err) throw err;
-            connection.query("SELECT * FROM department", (err, res) => {
-                if (err) throw err;
-                this.addRolePrompts(res, connection);
-            });
-        });
+            await CRUD.addRole(answers);
+            indexModule.initiate();
+        } catch (error) {
+            console.log(error);
+        }
     },
 
     addEmployeePrompts: function(res, connection) {
         inquirer.prompt([{
+                type: "confirm",
+                message: "Is employee a manager?",
+                name: "manager"
+            },
+            {
                 type: "input",
                 message: "Enter first name of employee",
                 name: "first_name"
@@ -89,18 +84,30 @@ module.exports = {
                 choices: res.map(item => item.title),
                 name: "roleId"
             }
-        ]).then(function(answers) {
+        ]).then(answers => {
             res.forEach(item => {
                 if (item.title === answers.roleId) {
                     answers.roleId = item.id;
                     return;
                 }
             });
-            let query = `INSERT INTO employee (first_name, last_name, role_id) VALUES (?, ?, ?)`;
-            connection.query(query, [answers.first_name, answers.last_name, answers.roleId], function(err) {
-                if (err) throw err;
-                indexModule.initiate();
-            });
+
+            if (answers.manager === false) {
+                inquirer.prompt([{
+                    type: "rawlist",
+                    message: "Choose employees manager",
+                    choices: [],
+                    name: "manager_id"
+                }]).then(managerAnswer => {
+
+                })
+            } else {
+                let query = `INSERT INTO employee (first_name, last_name, role_id) VALUES (?, ?, ?)`;
+                connection.query(query, [answers.first_name, answers.last_name, answers.roleId], function(err) {
+                    if (err) throw err;
+                    indexModule.initiate();
+                });
+            }
         });
     },
 
