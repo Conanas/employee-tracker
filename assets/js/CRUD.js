@@ -56,5 +56,23 @@ module.exports = {
         connection.query(query, [answers.first_name, answers.last_name, answers.role_id, answers.manager_id], function(err) {
             if (err) throw err;
         })
+    },
+
+    getManagers: function() {
+        return new Promise((resolve, reject) => {
+            connection.query("SELECT * FROM employee WHERE manager_id IS NULL", function(err, res) {
+                if (err) reject(err);
+                resolve(res);
+            })
+        })
+    },
+
+    getEmployeesByManager: function(answers) {
+        return new Promise((resolve, reject) => {
+            connection.query("SELECT * FROM employee WHERE manager_id=?", [answers.manager], function(err, res) {
+                if (err) reject(err);
+                resolve(res);
+            })
+        })
     }
 }
