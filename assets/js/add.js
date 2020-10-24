@@ -43,7 +43,7 @@ module.exports = {
             },
             {
                 type: "rawlist",
-                message: "Enter department ID",
+                message: "Enter department",
                 choices: res.map(item => item.name),
                 name: "departmentId"
             }
@@ -72,6 +72,48 @@ module.exports = {
         });
     },
 
+    addEmployeePrompts: function(res, connection) {
+        inquirer.prompt([{
+                type: "input",
+                message: "Enter first name of employee",
+                name: "first_name"
+            },
+            {
+                type: "input",
+                message: "Enter last name of employee",
+                name: "last_name"
+            },
+            {
+                type: "rawlist",
+                message: "Enter role",
+                choices: res.map(item => item.title),
+                name: "roleId"
+            }
+        ]).then(function(answers) {
+            res.forEach(item => {
+                if (item.title === answers.roleId) {
+                    answers.roleId = item.id;
+                    return;
+                }
+            });
+            let query = `INSERT INTO employee (first_name, last_name, role_id) VALUES (?, ?, ?)`;
+            connection.query(query, [answers.first_name, answers.last_name, answers.roleId], function(err) {
+                if (err) throw err;
+                indexModule.initiate();
+            });
+        });
+    },
+
+    addEmployee: function() {
+        sqlLib.getConnection((err, connection) => {
+            if (err) throw err;
+            connection.query("SELECT * FROM role", (err, res) => {
+                if (err) throw err;
+                this.addEmployeePrompts(res, connection);
+            });
+        });
+    },
+
     addSelectionSwitch: function(addSelection) {
         switch (addSelection.addSelection) {
             case ("Department"):
@@ -81,7 +123,7 @@ module.exports = {
                 this.addRole();
                 break;
             case ("Employee"):
-
+                this.addEmployee();
                 break;
             case ("Back"):
                 indexModule.initiate();
