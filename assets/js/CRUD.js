@@ -26,9 +26,34 @@ module.exports = {
         })
     },
 
+    getRoles: function() {
+        return new Promise((resolve, reject) => {
+            connection.query("SELECT * FROM role", function(err, res) {
+                if (err) reject(err);
+                resolve(res);
+            })
+        })
+    },
+
     addRole: function(answers) {
         let query = "INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)"
         connection.query(query, [answers.title, answers.salary, answers.departmentId], function(err) {
+            if (err) throw err;
+        })
+    },
+
+    getEmployees: function() {
+        return new Promise((resolve, reject) => {
+            connection.query("SELECT * FROM employee", function(err, res) {
+                if (err) reject(err);
+                resolve(res);
+            })
+        })
+    },
+
+    addEmployee: function(answers) {
+        let query = "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)"
+        connection.query(query, [answers.first_name, answers.last_name, answers.role_id, answers.manager_id], function(err) {
             if (err) throw err;
         })
     }

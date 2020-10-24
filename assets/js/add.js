@@ -62,13 +62,10 @@ module.exports = {
         }
     },
 
-    addEmployeePrompts: function(res, connection) {
-        inquirer.prompt([{
-                type: "confirm",
-                message: "Is employee a manager?",
-                name: "manager"
-            },
-            {
+    addEmployeePrompts: function(employees, roles) {
+        rolesList = roles.map(item => item.title);
+        employeeList = employees.map(item => `${item.first_name} ${item.last_name}`);
+        return inquirer.prompt([{
                 type: "input",
                 message: "Enter first name of employee",
                 name: "first_name"
@@ -81,44 +78,83 @@ module.exports = {
             {
                 type: "rawlist",
                 message: "Enter role",
-                choices: res.map(item => item.title),
-                name: "roleId"
+                choices: rolesList,
+                name: "role_id"
+            },
+            // {
+            //     type: "confirm",
+            //     message: "Does this employee have a manager?",
+            //     name: "manager"
+            // }
+            {
+                type: "rawlist",
+                message: "Select manager of employee",
+                choices: ["No manager"].concat(employeeList),
+                name: "manager_id"
             }
-        ]).then(answers => {
-            res.forEach(item => {
-                if (item.title === answers.roleId) {
-                    answers.roleId = item.id;
+        ]);
+
+        // .then(answers => {
+        //     res.forEach(item => {
+        //         if (item.title === answers.roleId) {
+        //             answers.roleId = item.id;
+        //             return;
+        //         }
+        //     });
+
+        //     if (answers.manager === false) {
+        //         inquirer.prompt([{
+        //             type: "rawlist",
+        //             message: "Choose employees manager",
+        //             choices: [],
+        //             name: "manager_id"
+        //         }]).then(managerAnswer => {
+
+        //         })
+        //     } else {
+        //         let query = `INSERT INTO employee (first_name, last_name, role_id) VALUES (?, ?, ?)`;
+        //         connection.query(query, [answers.first_name, answers.last_name, answers.roleId], function(err) {
+        //             if (err) throw err;
+        //             indexModule.initiate();
+        //         });
+        //     }
+        // });
+    },
+
+    addEmployee: async function() {
+        try {
+            let roles = await CRUD.getRoles();
+            let employees = await CRUD.getEmployees();
+            let answers = await this.addEmployeePrompts(employees, roles);
+            if (answers.manager_id != "No manager") {
+                managerSplit = answers.manager_id.split(" ");
+                employees.forEach(employee => {
+                    if (employee.first_name === managerSplit[0] && employee.last_name === managerSplit[1]) {
+                        answers.manager_id = employee.id;
+                        return;
+                    }
+                });
+            } else {
+                answers.manager_id = null;
+            }
+            roles.forEach(role => {
+                if (role.title === answers.role_id) {
+                    answers.role_id = role.id;
                     return;
                 }
             });
-
-            if (answers.manager === false) {
-                inquirer.prompt([{
-                    type: "rawlist",
-                    message: "Choose employees manager",
-                    choices: [],
-                    name: "manager_id"
-                }]).then(managerAnswer => {
-
-                })
-            } else {
-                let query = `INSERT INTO employee (first_name, last_name, role_id) VALUES (?, ?, ?)`;
-                connection.query(query, [answers.first_name, answers.last_name, answers.roleId], function(err) {
-                    if (err) throw err;
-                    indexModule.initiate();
-                });
-            }
-        });
-    },
-
-    addEmployee: function() {
-        sqlLib.getConnection((err, connection) => {
-            if (err) throw err;
-            connection.query("SELECT * FROM role", (err, res) => {
-                if (err) throw err;
-                this.addEmployeePrompts(res, connection);
-            });
-        });
+            await CRUD.addEmployee(answers);
+            indexModule.initiate();
+        } catch (error) {
+            console.log(error);
+        }
+        // sqlLib.getConnection((err, connection) => {
+        //     if (err) throw err;
+        //     connection.query("SELECT * FROM role", (err, res) => {
+        //         if (err) throw err;
+        //         this.addEmployeePrompts(res, connection);
+        //     });
+        // });
     },
 
     addSelectionSwitch: function(addSelection) {
