@@ -1,7 +1,5 @@
 const inquirer = require("inquirer");
-const cTable = require("console.table");
 
-const sqlLib = require("../sqlLib");
 const indexModule = require("../../index");
 const CRUD = require("./CRUD");
 
@@ -81,11 +79,6 @@ module.exports = {
                 choices: rolesList,
                 name: "role_id"
             },
-            // {
-            //     type: "confirm",
-            //     message: "Does this employee have a manager?",
-            //     name: "manager"
-            // }
             {
                 type: "rawlist",
                 message: "Select manager of employee",
@@ -93,32 +86,6 @@ module.exports = {
                 name: "manager_id"
             }
         ]);
-
-        // .then(answers => {
-        //     res.forEach(item => {
-        //         if (item.title === answers.roleId) {
-        //             answers.roleId = item.id;
-        //             return;
-        //         }
-        //     });
-
-        //     if (answers.manager === false) {
-        //         inquirer.prompt([{
-        //             type: "rawlist",
-        //             message: "Choose employees manager",
-        //             choices: [],
-        //             name: "manager_id"
-        //         }]).then(managerAnswer => {
-
-        //         })
-        //     } else {
-        //         let query = `INSERT INTO employee (first_name, last_name, role_id) VALUES (?, ?, ?)`;
-        //         connection.query(query, [answers.first_name, answers.last_name, answers.roleId], function(err) {
-        //             if (err) throw err;
-        //             indexModule.initiate();
-        //         });
-        //     }
-        // });
     },
 
     addEmployee: async function() {
@@ -148,13 +115,6 @@ module.exports = {
         } catch (error) {
             console.log(error);
         }
-        // sqlLib.getConnection((err, connection) => {
-        //     if (err) throw err;
-        //     connection.query("SELECT * FROM role", (err, res) => {
-        //         if (err) throw err;
-        //         this.addEmployeePrompts(res, connection);
-        //     });
-        // });
     },
 
     addSelectionSwitch: function(addSelection) {
