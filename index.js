@@ -1,29 +1,10 @@
 const inquirer = require("inquirer");
 const cTable = require("console.table");
 
-const sqlLib = require("./assets/sqlLib");
 const addModule = require("./assets/js/add");
 const updateModule = require("./assets/js/update");
 const viewModule = require("./assets/js/view");
 const deleteModule = require("./assets/js/delete");
-
-sqlLib.getConnection(function(err, connection) {
-    if (err) throw err;
-    initiate();
-})
-
-// const connection = mysql.createConnection({
-//     host: "localhost",
-//     port: 3306,
-//     user: "root",
-//     password: "password",
-//     database: "employee_db"
-// })
-
-// connection.connect(function(err) {
-//     if (err) throw err;
-//     initiate();
-// })
 
 function switchMainSelection(mainSelection) {
     switch (mainSelection.selection) {
@@ -41,10 +22,6 @@ function switchMainSelection(mainSelection) {
             break;
         case ("Exit"):
             console.log("Exiting Program");
-            sqlLib.getConnection(function(err, connection) {
-                if (err) throw err;
-                connection.end;
-            });
             process.exit(-1);
         default:
             console.log("Switch Error");
@@ -79,14 +56,11 @@ async function initiate() {
     try {
         let mainSelection = await mainMenuPrompt();
         await switchMainSelection(mainSelection);
-
-        // connection.query(query, function(err, res) {
-        //     if (err) throw err;
-        //     initiate();
-        // })
     } catch (error) {
         console.log(error)
     }
 }
+
+initiate();
 
 module.exports.initiate = initiate;
