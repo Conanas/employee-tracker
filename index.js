@@ -15,7 +15,7 @@ function switchMainSelection(mainSelection) {
             viewModule.viewDatabase();
             break;
         case ("Update Database"):
-            // updateModule.updateDatabasePrompts();
+            updateModule.updateDatabase();
             break;
         case ("Delete from Database"):
             // deleteModule.deleteFromDatabasePrompts();
