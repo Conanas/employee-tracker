@@ -12,7 +12,7 @@ function switchMainSelection(mainSelection) {
             addModule.addToDatabase();
             break;
         case ("View Database"):
-            // viewModule.viewDatabasePrompts();
+            viewModule.viewDatabase();
             break;
         case ("Update Database"):
             // updateModule.updateDatabasePrompts();
