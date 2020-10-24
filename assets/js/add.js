@@ -1,4 +1,5 @@
 const inquirer = require("inquirer");
+const cTable = require("console.table");
 
 const sqlLib = require("../sqlLib");
 const indexModule = require("../../index");
@@ -19,7 +20,7 @@ module.exports = {
             let query = `INSERT INTO department (name) VALUES (?)`;
             sqlLib.getConnection(function(err, connection) {
                 if (err) throw err;
-                connection.query(query, [add.departmentName], function(err, res) {
+                connection.query(query, [add.departmentName], function(err) {
                     if (err) throw err;
                     indexModule.initiate();
                 });
@@ -29,15 +30,8 @@ module.exports = {
         }
     },
 
-    addRolePrompts: function() {
-        sqlLib.getConnection(function(err, connection) {
-            if (err) throw err;
-            connection.query("SELECT * FROM department", function(err, res) {
-                if (err) throw err;
-                console.log(res);
-            });
-        });
-        return inquirer.prompt([{
+    addRolePrompts: function(res, connection) {
+        inquirer.prompt([{
                 type: "input",
                 message: "Enter name of role",
                 name: "title"
@@ -50,19 +44,32 @@ module.exports = {
             {
                 type: "rawlist",
                 message: "Enter department ID",
+                choices: res.map(item => item.name),
                 name: "departmentId"
             }
-        ]);
+        ]).then(function(answers) {
+            res.forEach(item => {
+                if (item.name === answers.departmentId) {
+                    answers.departmentId = item.id;
+                    return;
+                }
+            });
+            let query = `INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)`;
+            connection.query(query, [answers.title, answers.salary, answers.departmentId], function(err) {
+                if (err) throw err;
+                indexModule.initiate();
+            });
+        });
     },
 
-    addRole: async function() {
-        try {
-            let add = await this.addRolePrompts();
-            let query = `INSERT INTO role (title, salary, department_id) VALUES ("${add.title}", "${add.salary}", "${add.departmentId}")`;
-            return query;
-        } catch (error) {
-            console.log(error);
-        }
+    addRole: function() {
+        sqlLib.getConnection((err, connection) => {
+            if (err) throw err;
+            connection.query("SELECT * FROM department", (err, res) => {
+                if (err) throw err;
+                this.addRolePrompts(res, connection);
+            });
+        });
     },
 
     addSelectionSwitch: function(addSelection) {
