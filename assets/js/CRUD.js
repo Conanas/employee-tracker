@@ -102,5 +102,19 @@ module.exports = {
         connection.query(query, [id], function(err) {
             if (err) throw err;
         })
+    },
+
+    deleteRole: function(id) {
+        let query = "DELETE FROM role WHERE id=?"
+        connection.query(query, [id], function(err) {
+            if (err) throw err;
+        })
+    },
+
+    deleteEmployee: function(id) {
+        let query = "DELETE FROM employee WHERE id=?"
+        connection.query(query, [id], function(err) {
+            if (err) throw err;
+        })
     }
 }
