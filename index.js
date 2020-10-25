@@ -1,10 +1,10 @@
 const inquirer = require("inquirer");
-const cTable = require("console.table");
 
 const addModule = require("./assets/js/add");
 const updateModule = require("./assets/js/update");
 const viewModule = require("./assets/js/view");
 const deleteModule = require("./assets/js/delete");
+const budgetModule = require("./assets/js/budget");
 
 function switchMainSelection(mainSelection) {
     switch (mainSelection.selection) {
@@ -19,6 +19,9 @@ function switchMainSelection(mainSelection) {
             break;
         case ("Delete from Database"):
             deleteModule.deleteFromDatabase();
+            break;
+        case ("View utilized budget of a department"):
+            budgetModule.viewBudgets();
             break;
         case ("Exit"):
             console.log("Exiting Program");
@@ -46,6 +49,7 @@ function mainMenuPrompt() {
             "View Database",
             "Update Database",
             "Delete from Database",
+            "View utilized budget of a department",
             "Exit"
         ],
         name: "selection"
