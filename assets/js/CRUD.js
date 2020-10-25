@@ -95,5 +95,12 @@ module.exports = {
         connection.query(query, [first_name, last_name, role_id, manager_id, id], function(err) {
             if (err) throw err;
         })
+    },
+
+    deleteDepartment: function(id) {
+        let query = "DELETE FROM department WHERE id=?"
+        connection.query(query, [id], function(err) {
+            if (err) throw err;
+        })
     }
 }
