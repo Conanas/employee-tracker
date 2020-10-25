@@ -18,7 +18,7 @@ function switchMainSelection(mainSelection) {
             updateModule.updateDatabase();
             break;
         case ("Delete from Database"):
-            // deleteModule.deleteFromDatabasePrompts();
+            deleteModule.deleteFromDatabase();
             break;
         case ("Exit"):
             console.log("Exiting Program");
