@@ -16,7 +16,7 @@ module.exports = {
     addDepartment: async function() {
         try {
             let department = await this.addDepartmentPrompts();
-            await CRUD.addDepartment(department);
+            await CRUD.addDepartment(department.name);
             indexModule.initiate();
         } catch (error) {
             console.log(error);
@@ -37,8 +37,8 @@ module.exports = {
             {
                 type: "rawlist",
                 message: "Enter department",
-                choices: departments.map(item => item.name),
-                name: "departmentId"
+                choices: departments.map(item => `id: ${item.id} name: ${item.name}`),
+                name: "department"
             }
         ])
     },
@@ -47,13 +47,8 @@ module.exports = {
         try {
             let departments = await CRUD.getDepartments();
             let answers = await this.addRolePrompts(departments);
-            departments.forEach(item => {
-                if (item.name === answers.departmentId) {
-                    answers.departmentId = item.id;
-                    return;
-                }
-            });
-            await CRUD.addRole(answers);
+            answers.department_id = answers.department.split(" ")[1];
+            await CRUD.addRole(answers.title, answers.salary, answers.department_id);
             indexModule.initiate();
         } catch (error) {
             console.log(error);
@@ -61,8 +56,7 @@ module.exports = {
     },
 
     addEmployeePrompts: function(employees, roles) {
-        rolesList = roles.map(item => item.title);
-        employeeList = employees.map(item => `${item.first_name} ${item.last_name}`);
+        employeeList = employees.map(employee => `id: ${employee.id} name: ${employee.first_name} ${employee.last_name}`);
         return inquirer.prompt([{
                 type: "input",
                 message: "Enter first name of employee",
@@ -76,14 +70,14 @@ module.exports = {
             {
                 type: "rawlist",
                 message: "Enter role",
-                choices: rolesList,
-                name: "role_id"
+                choices: roles.map(role => `id: ${role.id} title: ${role.title}`),
+                name: "role"
             },
             {
                 type: "rawlist",
                 message: "Select manager of employee",
                 choices: ["No manager"].concat(employeeList),
-                name: "manager_id"
+                name: "manager"
             }
         ]);
     },
@@ -93,24 +87,13 @@ module.exports = {
             let roles = await CRUD.getRoles();
             let employees = await CRUD.getEmployees();
             let answers = await this.addEmployeePrompts(employees, roles);
-            if (answers.manager_id != "No manager") {
-                managerSplit = answers.manager_id.split(" ");
-                employees.forEach(employee => {
-                    if (employee.first_name === managerSplit[0] && employee.last_name === managerSplit[1]) {
-                        answers.manager_id = employee.id;
-                        return;
-                    }
-                });
+            if (answers.manager != "No manager") {
+                answers.manager_id = answers.manager.split(" ")[1];
             } else {
                 answers.manager_id = null;
             }
-            roles.forEach(role => {
-                if (role.title === answers.role_id) {
-                    answers.role_id = role.id;
-                    return;
-                }
-            });
-            await CRUD.addEmployee(answers);
+            answers.role_id = answers.role.split(" ")[1];
+            await CRUD.addEmployee(answers.first_name, answers.last_name, answers.role_id, answers.manager_id);
             indexModule.initiate();
         } catch (error) {
             console.log(error);

@@ -46,7 +46,7 @@ module.exports = {
         return inquirer.prompt([{
             type: "rawlist",
             message: "Select manager",
-            choices: managers.map(manager => `${manager.first_name} ${manager.last_name}`),
+            choices: managers.map(manager => `id: ${manager.id} name: ${manager.first_name} ${manager.last_name}`),
             name: "manager"
         }])
     },
@@ -55,14 +55,8 @@ module.exports = {
         try {
             let managers = await CRUD.getManagers();
             let answers = await this.viewEmployeesByManagerPrompts(managers);
-            answersSplit = answers.manager.split(" ");
-            managers.forEach(manager => {
-                if (manager.first_name === answersSplit[0] && manager.last_name === answersSplit[1]) {
-                    answers.manager = manager.id;
-                    return;
-                }
-            })
-            let employeesByManager = await CRUD.getEmployeesByManager(answers);
+            answers.manager_id = answers.manager.split(" ")[1];
+            let employeesByManager = await CRUD.getEmployeesByManager(answers.manager_id);
             if (employeesByManager.length === 0) {
                 console.log("\nNo employees under this manager\n");
             } else {

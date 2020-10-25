@@ -19,9 +19,9 @@ module.exports = {
         })
     },
 
-    addDepartment: function(department) {
+    addDepartment: function(name) {
         let query = "INSERT INTO department (name) VALUES (?)"
-        connection.query(query, [department.name], function(err) {
+        connection.query(query, [name], function(err) {
             if (err) throw err;
         })
     },
@@ -35,9 +35,9 @@ module.exports = {
         })
     },
 
-    addRole: function(answers) {
+    addRole: function(title, salary, department_id) {
         let query = "INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)"
-        connection.query(query, [answers.title, answers.salary, answers.departmentId], function(err) {
+        connection.query(query, [title, salary, department_id], function(err) {
             if (err) throw err;
         })
     },
@@ -51,9 +51,9 @@ module.exports = {
         })
     },
 
-    addEmployee: function(answers) {
+    addEmployee: function(first_name, last_name, role_id, manager_id) {
         let query = "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)"
-        connection.query(query, [answers.first_name, answers.last_name, answers.role_id, answers.manager_id], function(err) {
+        connection.query(query, [first_name, last_name, role_id, manager_id], function(err) {
             if (err) throw err;
         })
     },
@@ -67,12 +67,19 @@ module.exports = {
         })
     },
 
-    getEmployeesByManager: function(answers) {
+    getEmployeesByManager: function(manager_id) {
         return new Promise((resolve, reject) => {
-            connection.query("SELECT * FROM employee WHERE manager_id=?", [answers.manager], function(err, res) {
+            connection.query("SELECT * FROM employee WHERE manager_id=?", [manager_id], function(err, res) {
                 if (err) reject(err);
                 resolve(res);
             })
+        })
+    },
+
+    updateDepartment: function(id, newName) {
+        let query = "UPDATE department SET name=? WHERE id=?"
+        connection.query(query, [newName, id], function(err) {
+            if (err) throw err;
         })
     }
 }
