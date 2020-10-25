@@ -116,5 +116,21 @@ module.exports = {
         connection.query(query, [id], function(err) {
             if (err) throw err;
         })
+    },
+
+    viewBudgetByDepartment: function(department_id) {
+        return new Promise((resolve, reject) => {
+            const query = `SELECT CONCAT('$', format(SUM(role.salary), 2))
+            AS "Budget"
+            FROM role
+            INNER JOIN employee 
+            ON role.id=employee.role_id
+            WHERE role.department_id=?
+            ORDER BY role.department_id;`;
+            connection.query(query, [department_id], function(err, res) {
+                if (err) reject(err);
+                resolve(res);
+            })
+        })
     }
 }
