@@ -35,7 +35,7 @@ module.exports = {
                 name: "salary"
             },
             {
-                type: "rawlist",
+                type: "list",
                 message: "Enter department",
                 choices: departments.map(item => `id: ${item.id} name: ${item.name}`),
                 name: "department"
@@ -68,13 +68,13 @@ module.exports = {
                 name: "last_name"
             },
             {
-                type: "rawlist",
+                type: "list",
                 message: "Enter role",
                 choices: roles.map(role => `id: ${role.id} title: ${role.title}`),
                 name: "role"
             },
             {
-                type: "rawlist",
+                type: "list",
                 message: "Select manager of employee",
                 choices: ["No manager"].concat(employeeList),
                 name: "manager"

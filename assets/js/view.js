@@ -44,7 +44,7 @@ module.exports = {
 
     viewEmployeesByManagerPrompts: function(managers) {
         return inquirer.prompt([{
-            type: "rawlist",
+            type: "list",
             message: "Select manager",
             choices: managers.map(manager => `id: ${manager.id} name: ${manager.first_name} ${manager.last_name}`),
             name: "manager"
