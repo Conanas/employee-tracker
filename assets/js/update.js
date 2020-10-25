@@ -73,6 +73,58 @@ module.exports = {
         }
     },
 
+    selectEmployee: function(employees, roles, managers) {
+        return inquirer.prompt([{
+                type: "list",
+                message: "Which employee would you like to edit?",
+                choices: employees.map(employee => `id: ${employee.id} name: ${employee.first_name} ${employee.last_name}`),
+                name: "employee"
+            },
+            {
+                type: "input",
+                message: "Enter employee first name",
+                name: "first_name"
+            },
+            {
+                type: "input",
+                message: "Enter employee last name",
+                name: "last_name"
+            },
+            {
+                type: "list",
+                message: "Select employees role",
+                choices: roles.map(role => `id: ${role.id} title: ${role.title}`),
+                name: "role"
+            },
+            {
+                type: "list",
+                message: "Enter employees manager",
+                choices: ["No manager"].concat(managers.map(manager => `id: ${manager.id} name: ${manager.first_name} ${manager.last_name}`)),
+                name: "manager"
+            }
+        ])
+    },
+
+    updateEmployees: async function() {
+        try {
+            let roles = await CRUD.getRoles();
+            let managers = await CRUD.getManagers();
+            let employees = await CRUD.getEmployees();
+            let answers = await this.selectEmployee(employees, roles, managers);
+            answers.id = answers.employee.split(" ")[1];
+            answers.role_id = answers.role.split(" ")[1];
+            if (answers.manager === "No manager") {
+                answers.manager_id = null;
+            } else {
+                answers.manager_id = answers.manager.split(" ")[1];
+            }
+            await CRUD.updateEmployee(answers.id, answers.first_name, answers.last_name, answers.role_id, answers.manager_id);
+            indexModule.initiate();
+        } catch (error) {
+            console.log(error);
+        }
+    },
+
     updateSelectionSwitch(updateSelection) {
         switch (updateSelection.updateSelection) {
             case ("Departments"):

@@ -88,5 +88,12 @@ module.exports = {
         connection.query(query, [title, salary, department_id, id], function(err) {
             if (err) throw err;
         })
+    },
+
+    updateEmployee: function(id, first_name, last_name, role_id, manager_id) {
+        let query = "UPDATE employee SET first_name=?, last_name=?, role_id=?, manager_id=? WHERE id=?"
+        connection.query(query, [first_name, last_name, role_id, manager_id, id], function(err) {
+            if (err) throw err;
+        })
     }
 }
