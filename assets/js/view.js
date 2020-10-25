@@ -84,6 +84,9 @@ module.exports = {
             case ("Employees by manager"):
                 this.viewEmployeesByManager();
                 break;
+            case ("Back"):
+                indexModule.initiate();
+                break;
             default:
                 console.log("View Switch Error");
         }
@@ -97,7 +100,8 @@ module.exports = {
                 "Departments",
                 "Roles",
                 "Employees",
-                "Employees by manager"
+                "Employees by manager",
+                "Back"
             ],
             name: "viewSelection"
         }])

@@ -136,6 +136,9 @@ module.exports = {
             case ("Employees"):
                 this.updateEmployees();
                 break;
+            case ("Back"):
+                indexModule.initiate();
+                break;
             default:
                 console.log("Update Switch Error");
         }
@@ -149,6 +152,7 @@ module.exports = {
                 "Departments",
                 "Roles",
                 "Employees",
+                "Back"
             ],
             name: "updateSelection"
         }])
