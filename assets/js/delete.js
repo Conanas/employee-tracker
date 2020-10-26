@@ -1,10 +1,13 @@
+// required node modules
 const inquirer = require("inquirer");
 
+// required local modules
 const indexModule = require("../../index");
 const CRUD = require("./CRUD");
 
 module.exports = {
 
+    //  prompts the user for a department to delete from the database
     selectDepartment: function(departments) {
         return inquirer.prompt([{
             type: "list",
@@ -14,6 +17,7 @@ module.exports = {
         }])
     },
 
+    // starts the function required to delete a department from the database
     deleteDepartments: async function() {
         try {
             let departments = await CRUD.getDepartments();
@@ -26,6 +30,7 @@ module.exports = {
         }
     },
 
+    // prompts the user to select a role to delete from the database
     selectRole: function(roles) {
         return inquirer.prompt([{
             type: "list",
@@ -35,6 +40,7 @@ module.exports = {
         }])
     },
 
+    // starts the functions required to delete a role from the database
     deleteRoles: async function() {
         try {
             let roles = await CRUD.getRoles();
@@ -47,6 +53,7 @@ module.exports = {
         }
     },
 
+    // prompts the user to select an employee to delete from the database
     selectEmployees: function(employees) {
         return inquirer.prompt([{
             type: "list",
@@ -56,6 +63,7 @@ module.exports = {
         }])
     },
 
+    // starts the function required to delete an employee from the database
     deleteEmployees: async function() {
         try {
             let employees = await CRUD.getEmployees();
@@ -68,6 +76,7 @@ module.exports = {
         }
     },
 
+    // switch statement function to choose the correct delete pathway
     deleteSelectionSwitch(deleteSelection) {
         switch (deleteSelection.deleteSelection) {
             case ("Departments"):
@@ -87,6 +96,7 @@ module.exports = {
         }
     },
 
+    // delete menu
     deleteSelectionPrompts: function() {
         return inquirer.prompt([{
             type: "rawlist",
@@ -101,6 +111,7 @@ module.exports = {
         }])
     },
 
+    // starts the functions required to delete from the database
     deleteFromDatabase: async function() {
         try {
             let deleteSelection = await this.deleteSelectionPrompts();
