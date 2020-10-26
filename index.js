@@ -1,11 +1,14 @@
+// node modules
 const inquirer = require("inquirer");
 
+// variable declarations for the different modules
 const addModule = require("./assets/js/add");
 const updateModule = require("./assets/js/update");
 const viewModule = require("./assets/js/view");
 const deleteModule = require("./assets/js/delete");
 const budgetModule = require("./assets/js/budget");
 
+// switch function for the main prompt menu
 function switchMainSelection(mainSelection) {
     switch (mainSelection.selection) {
         case ("Add to Database"):
@@ -31,6 +34,7 @@ function switchMainSelection(mainSelection) {
     }
 }
 
+// main menu prompts
 function mainMenuPrompt() {
     return inquirer.prompt([{
         type: "rawlist",
@@ -47,6 +51,7 @@ function mainMenuPrompt() {
     }])
 }
 
+// initiate function that starts the program and shows the main menu
 async function initiate() {
     try {
         let mainSelection = await mainMenuPrompt();
@@ -56,6 +61,8 @@ async function initiate() {
     }
 }
 
+// start the application
 initiate();
 
+// export the initiate function for use with other modules
 module.exports.initiate = initiate;
