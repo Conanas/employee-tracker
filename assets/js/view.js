@@ -1,11 +1,14 @@
+// required node modules
 const inquirer = require("inquirer");
 const cTable = require("console.table");
 
+// required local modules
 const indexModule = require("../../index");
 const CRUD = require("./CRUD");
 
 module.exports = {
 
+    // retrieves the departments from the database and displays them to the console as a table
     viewDepartments: async function() {
         try {
             let departments = await CRUD.getDepartments();
@@ -18,6 +21,7 @@ module.exports = {
         }
     },
 
+    // retrieves the roles from the database and displays them to the console as a table
     viewRoles: async function() {
         try {
             let roles = await CRUD.getRoles();
@@ -30,6 +34,7 @@ module.exports = {
         }
     },
 
+    // retrieves the employees from the database and displays them to the console as a table
     viewEmployees: async function() {
         try {
             let employees = await CRUD.getEmployees();
@@ -42,6 +47,7 @@ module.exports = {
         }
     },
 
+    // prompts for the manager
     viewEmployeesByManagerPrompts: function(managers) {
         return inquirer.prompt([{
             type: "list",
@@ -51,6 +57,7 @@ module.exports = {
         }])
     },
 
+    // retrieves the employees under a certain manager from the database and displays them to the console as a table
     viewEmployeesByManager: async function() {
         try {
             let managers = await CRUD.getManagers();
@@ -70,6 +77,7 @@ module.exports = {
         }
     },
 
+    // switch function for menu pathway
     viewSelectionSwitch(viewSelection) {
         switch (viewSelection.viewSelection) {
             case ("Departments"):
@@ -92,6 +100,7 @@ module.exports = {
         }
     },
 
+    // view menu
     viewSelectionPrompts: function() {
         return inquirer.prompt([{
             type: "rawlist",
@@ -107,6 +116,7 @@ module.exports = {
         }])
     },
 
+    // starts the view database functions
     viewDatabase: async function() {
         try {
             let viewSelection = await this.viewSelectionPrompts();
