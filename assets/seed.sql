@@ -15,14 +15,14 @@ VALUES
 INSERT INTO employee (first_name, last_name, role_id)
 VALUES
 ("Tom", "Haigh", 1),
-("Stevie", "Wunderbar", 3),
-("Virginia", "Were-woolf", 5);
+("Atticus", "Finch", 3),
+("Huckleberry", "Finn", 5);
 
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
 VALUES
-("JK", "Growling", 2, 1),
-("Reeses", "Witterspinschten", 2, 1),
-("Puffy", "Vater", 4, 3),
-("Joanna", "Plumley", 4, 3),
-("Angela", "Lambsbury", 6, 5),
-("Douglas", "Fir", 6, 5);
+("Harry", "Potter", 2, 1),
+("Miss", "Havisham", 2, 1),
+("Sherlock", "Holmes", 4, 2),
+("Boo", "Radley", 4, 2),
+("White", "Fang", 6, 3),
+("Frodo", "Baggins", 6, 3);
